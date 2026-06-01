@@ -1,4 +1,5 @@
 import streamlit as st
+import plotly.express as px
 import pandas as pd
 
 st.title("💰 我的記帳 APP")
@@ -57,6 +58,24 @@ if st.session_state.records:
     col1.metric("總收入", f"${income:,.0f}")
     col2.metric("總支出", f"${expense:,.0f}")
     col3.metric("餘額", f"${income-expense:,.0f}")
+
+    expense_df = df[df["類型"] == "支出"]
+
+    category_sum = (
+        expense_df
+        .groupby("分類")["金額"]
+        .sum()
+        .reset_index()
+    )
+
+    fig = px.pie(
+        category_sum,
+        names="分類",
+        values="金額",
+        title="支出分類分析"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
 else:
     st.info("目前尚無資料")
